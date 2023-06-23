@@ -10,8 +10,12 @@ export default function RegisterPage() {
     // Prevent default behavior of the form submit (which is to refresh the page)
     ev.preventDefault();
 
-    // Send request to API
-    axios.get('http://localhost:4000/test');
+    // Send request to API. Defaults to localhost:4000 in App.jsx.
+    axios.post('/register', {
+      name,
+      email,
+      password,
+    });
   }
   return (
     <div className="mt-4 grow flex items-center justify-around">
