@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('./models/User.js');
+const cookieParaser = require('cookie-parser');
 require('dotenv').config();
 const app = express();
 
@@ -14,7 +15,8 @@ const jwtSecret = "asdasdbfyhcmiqwuhe";
 
 // Use the body-parser middleware
 app.use(express.json());
-app.use(cors({
+app.use(cookieParaser());
+app.use(cors({  
     credentials: true,
     origin: 'http://localhost:5173',
 }));
@@ -53,10 +55,13 @@ app.post('/login', async (req, res) => {
         const passOk = bcrypt.compareSync(password, userDoc.password);
         if (passOk) {
             // Create a token with the user's email and id.
-            jwt.sign({email:userDoc.email, id: userDoc._id}, jwtSecret, {}, (err, token) => {
+            jwt.sign({
+                email:userDoc.email, 
+                id:userDoc._id, 
+            }, jwtSecret, {}, (err, token) => {
                 if(err) throw err;
-                // Respond with token (a cookie) from callback function and sends json response.
-                res.cookie('token', token, 'none').json('pass ok');
+                // Respond with token (a cookie) from callback function and returns userDoc
+                res.cookie('token', token, 'none').json(userDoc);
             });
         }
         else {
@@ -67,5 +72,25 @@ app.post('/login', async (req, res) => {
         res.json('not found');
     }
 });
+
+app.get('/profile', (req, res) => {
+    // We need to get the token from the cookie.
+    const {token} = req.cookies;
+    
+    // If the token is valid, we can get the user from the token with our salt key.
+    if (token) {
+        jwt.verify(token, jwtSecret, {}, async (err, userData) => {
+            if (err) throw err;
+            
+            // Grab name, email and ID from the token.
+            const {name, email, _id} = await User.findById(userData.id);
+            res.json({name, email, _id});
+        });
+    } // 401 is the HTTP status code for unauthorized.
+    else {
+        res.status(401).json('no token');
+    }
+});
+
 
 app.listen(4000);
