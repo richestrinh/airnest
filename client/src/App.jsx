@@ -7,7 +7,8 @@ import Layout from './Layout';
 import axios from 'axios';
 
 axios.defaults.baseURL = 'http://localhost:4000/';
-
+// Setting withCredentials to true will have Axios include cookies in the request it sends.
+axios.defaults.withCredentials = true;
 
 function App() {
   return (
