@@ -86,11 +86,15 @@ app.get('/profile', (req, res) => {
             const {name, email, _id} = await User.findById(userData.id);
             res.json({name, email, _id});
         });
-    } // 401 is the HTTP status code for unauthorized.
+    } 
     else {
-        res.status(401).json('no token');
+        res.json(null);
     }
 });
 
+app.post('/logout', (req, res) => {
+    // res.clearCookie('token');
+    res.cookie('token', '').json(true);
+});
 
 app.listen(4000);
