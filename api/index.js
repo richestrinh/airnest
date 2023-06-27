@@ -5,6 +5,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('./models/User.js');
 const cookieParaser = require('cookie-parser');
+const imageDownloader = require('image-downloader');
 require('dotenv').config();
 const app = express();
 
@@ -16,6 +17,8 @@ const jwtSecret = "asdasdbfyhcmiqwuhe";
 // Use the body-parser middleware
 app.use(express.json());
 app.use(cookieParaser());
+// Display photos in the browser.
+app.use('/uploads', express.static(__dirname+'/uploads'));
 app.use(cors({  
     credentials: true,
     origin: 'http://localhost:5173',
@@ -95,6 +98,18 @@ app.get('/profile', (req, res) => {
 app.post('/logout', (req, res) => {
     // res.clearCookie('token');
     res.cookie('token', '').json(true);
+});
+
+// Endpoint for uploading an image by a link. 
+app.post('/upload-by-link', async (req, res) => {
+    const {link} = req.body;
+    const newName = 'photo' + Date.now() + '.jpg';
+    await imageDownloader.image({
+        url:link, 
+        // Add full path to directory.
+        dest: __dirname + '/uploads/' +newName,
+    });
+    res.json(newName);
 });
 
 app.listen(4000);
