@@ -46,6 +46,7 @@ export default function PlacesFormPage() {
     await axios.post('/places', placeData)
 
     setRedirect(true);
+  }
 
   if (redirect) {
     return <Navigate to="/account/places" />;
