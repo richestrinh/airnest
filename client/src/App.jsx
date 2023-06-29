@@ -1,12 +1,14 @@
 import './App.css'
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import IndexPage from './pages/IndexPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
-import AccountPage from './pages/AccountPage';
+import ProfilePage from './pages/AccountPage';
 import Layout from './Layout';
 import axios from 'axios';
 import { UserContextProvider } from './UserContent';
+import PlacesPage from './pages/PlacesPage';
+import PlacesFormPage from './pages/PlacesFormPage';
 
 axios.defaults.baseURL = 'http://localhost:4000/';
 // Setting withCredentials to true will have Axios include cookies in the request it sends.
@@ -21,8 +23,9 @@ function App() {
           <Route index element={<IndexPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-          <Route path="/account/:subpage?" element={<AccountPage />} />
-          <Route path="/account/:subpage/:action" element={<AccountPage />} />
+          <Route path="/account/" element={<ProfilePage />} />
+          <Route path="/account/places" element={<PlacesPage />} />
+          <Route path="/account/places/new" element={<PlacesFormPage />} />
         </Route>
       </Routes>
     </UserContextProvider>
