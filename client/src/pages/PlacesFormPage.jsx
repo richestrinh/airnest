@@ -18,14 +18,14 @@ export default function PlacesFormPage() {
   const [maxGuests, setMaxGuests] = useState(1);
   const [redirect, setRedirect] = useState(false);
 
-  const {id} = useParams();
+  const { id } = useParams();
   console.log(id);
   useEffect(() => {
     if (!id) {
       return;
     }
-    axios.get('/places/'+id).then(response => {
-      const { data } = response;    
+    axios.get('/places/' + id).then(response => {
+      const { data } = response;
       setTitle(data.title);
       setAddress(data.address);
       setAddedPhotos(data.photos);
@@ -37,7 +37,7 @@ export default function PlacesFormPage() {
       setMaxGuests(data.maxGuests);
     });
   }, [id]);
-  
+
   function inputHeader(text) {
     return (
       <h2 className="text-2xl mt-4">{text}</h2>
@@ -57,16 +57,25 @@ export default function PlacesFormPage() {
     );
   }
 
-  async function addNewPlace(ev) {
+  async function savePlace(ev) {
     ev.preventDefault();
     const placeData = {
       title, address, addedPhotos,
       description, perks, extraInfo,
       checkIn, checkOut, maxGuests
     };
-    await axios.post('/places', placeData)
+    // Edit an existing place in the database.
+    if (id) {
+      await axios.put('/places', {
+        id, ...placeData
+      });      
+      setRedirect(true);
+    } else {
+      // If no id, add a new place.
+      await axios.post('/places', placeData);
+      setRedirect(true);
+    }
 
-    setRedirect(true);
   }
 
   if (redirect) {
@@ -76,7 +85,7 @@ export default function PlacesFormPage() {
   return (
     <div>
       <AccountNav />
-      <form onSubmit={addNewPlace}>
+      <form onSubmit={savePlace}>
         {preInput('Title', 'title for your place.')}
         <input type="text"
           value={title}

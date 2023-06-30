@@ -187,4 +187,29 @@ app.get('/places/:id', async (req, res) => {
   res.json(await Place.findById(id));
 });
 
+app.put('/places/', async (req, res) => {
+  const { token } = req.cookies;
+  const { id, title, address, addedPhotos, description, 
+  perks, extraInfo, checkIn, checkOut, maxGuests } = req.body;
+  jwt.verify(token, jwtSecret, {}, async (err, userData) => {
+    const placeDoc = await Place.findById(id);
+    // Check if the user owns the place. (check if id's match)
+    if(userData.id === placeDoc.owner.toString()) {
+      placeDoc.set({
+        title: title,
+        address: address,
+        photos: addedPhotos,
+        description: description,
+        perks: perks,
+        extraInfo: extraInfo,
+        checkIn: checkIn,
+        checkOut: checkOut,
+        maxGuests: maxGuests,   
+      })
+      placeDoc.save();
+      res.json('saved edit!');
+    }
+  });
+});
+
 app.listen(4000);
