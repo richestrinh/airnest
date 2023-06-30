@@ -149,7 +149,7 @@ app.post('/upload', photosMiddleware.array('photos', 100), (req, res) => {
 app.post('/places', (req, res) => {
     const { token } = req.cookies;
     const { title, address, addedPhotos, description, 
-    perks, extraInfo, checkIn, checkOut, maxGuest } = req.body;
+    perks, extraInfo, checkIn, checkOut, maxGuests } = req.body;
 
     jwt.verify(token, jwtSecret, {}, async (err, userData) => {
       if (err) throw err;
@@ -157,17 +157,34 @@ app.post('/places', (req, res) => {
         owner: userData.id,
         title: title,
         address: address,
-        addedPhotos: addedPhotos,
+        photos: addedPhotos,
         description: description,
         perks: perks,
         extraInfo: extraInfo,
         checkIn: checkIn,
         checkOut: checkOut,
-        maxGuest: maxGuest,    
+        maxGuests: maxGuests,    
       });
       res.json(placeDoc);
+  });  
+});
+
+// Endpoint for getting all places.
+app.get('/places', (req, res) => {
+  const { token } = req.cookies;
+  jwt.verify(token, jwtSecret, {}, async (err, userData) => {
+    // if (err) throw err;
+    // userData dcrypted data.
+    const {id} = userData;
+    // Find all places owned by the user.
+    res.json( await Place.find({owner:id}))
   });
-  
+});
+
+// Endpoint for getting a place by id.
+app.get('/places/:id', async (req, res) => {
+  const {id} = req.params;
+  res.json(await Place.findById(id));
 });
 
 app.listen(4000);
