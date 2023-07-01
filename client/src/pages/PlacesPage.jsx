@@ -8,7 +8,7 @@ export default function PlacesPage() {
 
   // After rendering, get places from the database.
   useEffect(() => {
-    axios.get('/places').then(({ data }) => {
+    axios.get('/user-places').then(({ data }) => {
       setPlaces(data);
     });
   }, []);

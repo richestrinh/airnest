@@ -105,10 +105,12 @@ app.post('/logout', (req, res) => {
 });
 
 // Endpoint for uploading an image by a link. 
+// TODO: Make sure the link is valid.
 app.post('/upload-by-link', async (req, res) => {
     const { link } = req.body;
     const newName = 'photo' + Date.now() + '.jpg';
     await imageDownloader.image({
+      // TODO: Make sure the link is valid.
         url: link,
         // Add full path to directory.
         dest: __dirname + '/uploads/' + newName,
@@ -149,7 +151,7 @@ app.post('/upload', photosMiddleware.array('photos', 100), (req, res) => {
 app.post('/places', (req, res) => {
     const { token } = req.cookies;
     const { title, address, addedPhotos, description, 
-    perks, extraInfo, checkIn, checkOut, maxGuests } = req.body;
+    perks, extraInfo, checkIn, checkOut, maxGuests, price } = req.body;
 
     jwt.verify(token, jwtSecret, {}, async (err, userData) => {
       if (err) throw err;
@@ -164,13 +166,14 @@ app.post('/places', (req, res) => {
         checkIn: checkIn,
         checkOut: checkOut,
         maxGuests: maxGuests,    
+        price: price,
       });
       res.json(placeDoc);
   });  
 });
 
-// Endpoint for getting all places.
-app.get('/places', (req, res) => {
+// Endpoint for getting all places owned by the user.
+app.get('/user-places', (req, res) => {
   const { token } = req.cookies;
   jwt.verify(token, jwtSecret, {}, async (err, userData) => {
     // if (err) throw err;
@@ -187,10 +190,11 @@ app.get('/places/:id', async (req, res) => {
   res.json(await Place.findById(id));
 });
 
+// Endpoint for updating a place.
 app.put('/places/', async (req, res) => {
   const { token } = req.cookies;
   const { id, title, address, addedPhotos, description, 
-  perks, extraInfo, checkIn, checkOut, maxGuests } = req.body;
+  perks, extraInfo, checkIn, checkOut, maxGuests, price } = req.body;
   jwt.verify(token, jwtSecret, {}, async (err, userData) => {
     const placeDoc = await Place.findById(id);
     // Check if the user owns the place. (check if id's match)
@@ -204,7 +208,8 @@ app.put('/places/', async (req, res) => {
         extraInfo: extraInfo,
         checkIn: checkIn,
         checkOut: checkOut,
-        maxGuests: maxGuests,   
+        maxGuests: maxGuests,
+        price: price,
       })
       placeDoc.save();
       res.json('saved edit!');
@@ -212,4 +217,8 @@ app.put('/places/', async (req, res) => {
   });
 });
 
-app.listen(4000);
+// Endpoint for getting all places for displaying on main page.
+app.get('/places', async (req, res) => {
+  res.json(await Place.find());
+});
+app.listen(4000); 
