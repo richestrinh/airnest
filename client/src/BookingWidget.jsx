@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useState, useContext, useEffect} from "react";
 import { differenceInCalendarDays } from "date-fns";
 import axios from "axios";
 import { Navigate } from "react-router-dom";
+import {  } from "react";
+import { UserContext } from "./UserContent";
 
 
 export default function BookingWidget({ place }) {
@@ -11,6 +13,13 @@ export default function BookingWidget({ place }) {
   const [name, setName] = useState('');
   const [mobile, setMobile] = useState('');
   const [redirect, setRedirect] = useState('');
+  const {user} = useContext(UserContext);
+
+  useEffect(() => {
+    if (user) {
+      setName(user.name);
+    }
+  }, [user]);
 
   let numOfNights = 0;
 
@@ -60,7 +69,6 @@ export default function BookingWidget({ place }) {
         <div className="py-3 px-4 border-t">
           <label>Number of guests:</label>
           <input type="number"
-            defaultValue={1}
             value={numOfGuests}
             onChange={(ev) => setNumOfGuests(ev.target.value)}
           />

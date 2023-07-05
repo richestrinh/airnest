@@ -31,6 +31,16 @@ app.use(cors({
 
 mongoose.connect(process.env.MONGO_URL);
 
+// Returns a promise.
+function getUserDataFromReq(req) {
+  return new Promise((resolve, reject) => {
+    jwt.verify(req.cookies.token, jwtSecret, {}, async (err, userData) => {
+      if (err) throw err;
+      resolve(userData);
+    });
+  });
+}
+
 app.get('/test', (req, res) => {
   res.json('test ok');
 });
@@ -224,13 +234,15 @@ app.get('/places', async (req, res) => {
 });
 
 // Endpoint for saving a booking into the database.
-app.post('/bookings', (req, res) => {
+app.post('/bookings', async (req, res) => {
+  const userData = await getUserDataFromReq(req);
   const {
     place, checkIn, checkOut, numOfGuests, name, mobile, price,
   } = req.body;
 
   Booking.create({
     place, checkIn, checkOut, numOfGuests, name, mobile, price,
+    user: userData.id,
   }).then((doc) => {
     res.json(doc);
   }).catch((err) => {
@@ -238,4 +250,11 @@ app.post('/bookings', (req, res) => {
   });
 });
 
-app.listen(4000); 
+
+// Endpoint used for displaying all bookings.
+app.get('/bookings', async (req, res) => {
+  const userData = await getUserDataFromReq(req);
+  res.json( await Booking.find({ user: userData.id }).populate('place'));
+});
+
+  app.listen(4000);
