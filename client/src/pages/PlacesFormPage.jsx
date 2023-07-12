@@ -20,7 +20,6 @@ export default function PlacesFormPage() {
   const [redirect, setRedirect] = useState(false);
 
   const { id } = useParams();
-  console.log(id);
   useEffect(() => {
     if (!id) {
       return;

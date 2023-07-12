@@ -5,16 +5,21 @@ export default function PhotosUploader({ addedPhotos, onChange }) {
   const [photoLink, setPhotoLink] = useState('');
   // TODO: Handle invalid link error.
   async function addPhotoByLink(ev) {
-    // Prevent reloading of form after clicking button that calls this function.
-    ev.preventDefault();
-    // We need endpoint that will take the link and upload it to the server(uploads folder).
-    // Send 'photoLink' as 'link' to the endpoint.
-    const { data: filename } = await axios.post('/upload-by-link', { link: photoLink });
-    onChange(prev => {
-      return [...prev, filename];
-    });
-    // Reset this state / input.
-    setPhotoLink('');
+    try {
+      // Prevent reloading of form after clicking button that calls this function.
+      ev.preventDefault();
+      // We need endpoint that will take the link and upload it to the server(uploads folder).
+      // Send 'photoLink' as 'link' to the endpoint.
+      const { data: filename } = await axios.post('/upload-by-link', { link: photoLink });
+      onChange(prev => {
+        return [...prev, filename];
+      });
+      // Reset this state / input.
+      setPhotoLink('');
+    } catch (err) {
+      // ERR_INVALID_URL
+      alert("Please enter a valid link to upload!");
+    }
   }
   function uploadPhoto(ev) {
     const files = ev.target.files;
