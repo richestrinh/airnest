@@ -22,7 +22,7 @@ export default function BookingsPage() {
           <Link to={`/account/bookings/${booking._id}`} className="block md:flex gap-4 bg-gray-200 rounded-xl overflow-hidden mb-4 shadow-md">
             {/* <div className="w-48"> */}
             <div className="shrink-0">
-              <PlaceImg place={booking.place} />
+              <PlaceImg className="md:w-48 md:h-36" place={booking.place} />
             </div>
             {/* Right Text */}
             <div className="py-3 grow pr-3 px-3 md:px-0">
