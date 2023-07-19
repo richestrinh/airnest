@@ -2,22 +2,10 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const User = require('./models/User.js');
-const Place = require('./models/Place.js');
-const Booking = require('./models/Booking.js');
 const cookieParaser = require('cookie-parser');
-const imageDownloader = require('image-downloader');
-const multer = require('multer');
-const fs = require('fs');
 
 require('dotenv').config();
 const app = express();
-
-// Generate salt.
-const bcryptSalt = bcrypt.genSaltSync(10);
-
-const jwtSecret = "asdasdbfyhcmiqwuhe";
 
 // Use the body-parser middleware
 app.use(express.json());
@@ -29,232 +17,24 @@ app.use(cors({
   origin: 'http://localhost:5173',
 }));
 
-mongoose.connect(process.env.MONGO_URL);
+// Start refactoring api.
+const userRoute = require('./routes/user.js');
+const placeRoute = require('./routes/place.js');
+const bookingRoute = require('./routes/booking.js');
 
-// Returns a promise.
-function getUserDataFromReq(req) {
-  return new Promise((resolve, reject) => {
-    jwt.verify(req.cookies.token, jwtSecret, {}, async (err, userData) => {
-      if (err) throw err;
-      resolve(userData);
-    });
-  });
-}
+// Handling of user's account.
+app.use(userRoute);
+
+// Handling of user's places.
+app.use(placeRoute);
+
+// Handling of user's bookings.
+app.use(bookingRoute);
+
+mongoose.connect(process.env.MONGO_URL);
 
 app.get('/test', (req, res) => {
   res.json('test ok');
 });
 
-app.post('/register', async (req, res) => {
-  // Grab all information from the request body.
-  const { name, email, password } = req.body;
-
-  try {
-    const userDoc = await User.create({
-      name,
-      email,
-      // Generate and store hash in DB.
-      password: bcrypt.hashSync(password, bcryptSalt),
-    });
-    // Respond with json with all the information we are sending.
-    res.json(userDoc);
-  } catch (err) {
-    // 422 is the HTTP status code for unprocessable entity.
-    res.status(422).json(err);
-  }
-});
-
-app.post('/login', async (req, res) => {
-  const { email, password } = req.body;
-  // Find user by email.
-  const userDoc = await User.findOne({ email: email });
-  if (userDoc) {
-    // Check if password is correct.
-    const passOk = bcrypt.compareSync(password, userDoc.password);
-    if (passOk) {
-      // Create a token with the user's email and id.
-      jwt.sign({
-        email: userDoc.email,
-        id: userDoc._id,
-      }, jwtSecret, {}, (err, token) => {
-        if (err) throw err;
-        // Respond with token (a cookie) from callback function and returns userDoc
-        res.cookie('token', token, 'none').json(userDoc);
-      });
-    }
-    else {
-      res.status(422).json('pass not ok');
-    }
-  }
-  else {
-    res.json('not found');
-  }
-});
-
-app.get('/profile', (req, res) => {
-  // We need to get the token from the cookie.
-  const { token } = req.cookies;
-
-  // If the token is valid, we can get the user from the token with our salt key.
-  if (token) {
-    jwt.verify(token, jwtSecret, {}, async (err, userData) => {
-      if (err) throw err;
-
-      // Grab name, email and ID from the token.
-      const { name, email, _id } = await User.findById(userData.id);
-      res.json({ name, email, _id });
-    });
-  }
-  else {
-    res.json(null);
-  }
-});
-
-app.post('/logout', (req, res) => {
-  // res.clearCookie('token');
-  res.cookie('token', '').json(true);
-});
-
-// Endpoint for uploading an image by a link. 
-// TODO: Make sure the link is valid.
-app.post('/upload-by-link', async (req, res) => {
-  const { link } = req.body;
-  const newName = 'photo' + Date.now() + '.jpg';
-  await imageDownloader.image({
-    // TODO: Make sure the link is valid.
-    url: link,
-    // Add full path to directory.
-    dest: __dirname + '/uploads/' + newName,
-  });
-  res.json(newName);
-});
-
-// Endpoint for uploading an image from a device.
-// Uses Multer middleware.
-const photosMiddleware = multer({ dest: 'uploads/' });
-app.post('/upload', photosMiddleware.array('photos', 100), (req, res) => {
-  // Keep track of the number of files uploaded.
-  const uploadedFiles = [];
-
-  // Loop through all the files in the request.
-  for (let i = 0; i < req.files.length; i++) {
-    const { path, originalname } = req.files[i];
-    // Parts is the array of originalname parts.
-    const parts = originalname.split('.');
-
-    // Grab the file extension.
-    const ext = parts[parts.length - 1];
-
-    // Append ext.
-    const newPath = path + '.' + ext;
-
-    // Rename file.
-    fs.renameSync(path, newPath);
-
-    // Push the new path to the array. (Remove the 'uploads/')
-    uploadedFiles.push(newPath.replace('uploads/', ''));
-  }
-
-  res.json(uploadedFiles);
-});
-
-// Endpoint for creating a new place.
-app.post('/places', (req, res) => {
-  const { token } = req.cookies;
-  const { title, address, addedPhotos, description,
-    perks, extraInfo, checkIn, checkOut, maxGuests, price } = req.body;
-
-  jwt.verify(token, jwtSecret, {}, async (err, userData) => {
-    if (err) throw err;
-    const placeDoc = await Place.create({
-      owner: userData.id,
-      title: title,
-      address: address,
-      photos: addedPhotos,
-      description: description,
-      perks: perks,
-      extraInfo: extraInfo,
-      checkIn: checkIn,
-      checkOut: checkOut,
-      maxGuests: maxGuests,
-      price: price,
-    });
-    res.json(placeDoc);
-  });
-});
-
-// Endpoint for getting all places owned by the user.
-app.get('/user-places', (req, res) => {
-  const { token } = req.cookies;
-  jwt.verify(token, jwtSecret, {}, async (err, userData) => {
-    // if (err) throw err;
-    // userData dcrypted data.
-    const { id } = userData;
-    // Find all places owned by the user.
-    res.json(await Place.find({ owner: id }))
-  });
-});
-
-// Endpoint for getting a place by id.
-app.get('/places/:id', async (req, res) => {
-  const { id } = req.params;
-  res.json(await Place.findById(id));
-});
-
-// Endpoint for updating a place.
-app.put('/places/', async (req, res) => {
-  const { token } = req.cookies;
-  const { id, title, address, addedPhotos, description,
-    perks, extraInfo, checkIn, checkOut, maxGuests, price } = req.body;
-  jwt.verify(token, jwtSecret, {}, async (err, userData) => {
-    const placeDoc = await Place.findById(id);
-    // Check if the user owns the place. (check if id's match)
-    if (userData.id === placeDoc.owner.toString()) {
-      placeDoc.set({
-        title: title,
-        address: address,
-        photos: addedPhotos,
-        description: description,
-        perks: perks,
-        extraInfo: extraInfo,
-        checkIn: checkIn,
-        checkOut: checkOut,
-        maxGuests: maxGuests,
-        price: price,
-      })
-      placeDoc.save();
-      res.json('saved edit!');
-    }
-  });
-});
-
-// Endpoint for getting all places for displaying on main page.
-app.get('/places', async (req, res) => {
-  res.json(await Place.find());
-});
-
-// Endpoint for saving a booking into the database.
-app.post('/bookings', async (req, res) => {
-  const userData = await getUserDataFromReq(req);
-  const {
-    place, checkIn, checkOut, numOfGuests, name, mobile, price,
-  } = req.body;
-
-  Booking.create({
-    place, checkIn, checkOut, numOfGuests, name, mobile, price,
-    user: userData.id,
-  }).then((doc) => {
-    res.json(doc);
-  }).catch((err) => {
-    throw err;
-  });
-});
-
-
-// Endpoint used for displaying all bookings.
-app.get('/bookings', async (req, res) => {
-  const userData = await getUserDataFromReq(req);
-  res.json( await Booking.find({ user: userData.id }).populate('place'));
-});
-
-  app.listen(4000);
+app.listen(4000);
