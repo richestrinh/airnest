@@ -48,7 +48,8 @@ const [isMobile, setIsMobile] = useState(false);
       {/* Displaying of places. */}
       <div className="mt-4">
         {places.length > 0 && places.map(place => (
-          // For each place.
+            // For each place.
+          <div key={place._id}>
           <Link to={'/account/places/'+place._id} className="flex cursor-pointer gap-4 bg-gray-100 p-4 rounded-2xl mb-4 shadow-md">
             <div className="flex w-32 h-32 bg-gray-300 grow shrink-0">            
               <PlaceImg place={place} /> 
@@ -58,6 +59,7 @@ const [isMobile, setIsMobile] = useState(false);
               <p className="text-sm mt-2">{truncateDescription(place.description)}</p>
             </div>
           </Link>
+          </div>
         ))}
       </div>
     </div>
