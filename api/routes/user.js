@@ -13,7 +13,7 @@ const jwtSecret = "asdasdbfyhcmiqwuhe";
 
 const router = express.Router();
 
-router.post('/register', async (req, res) => {
+router.post('/api/register', async (req, res) => {
   mongoose.connect(process.env.MONGO_URL);
 
   // Grab all information from the request body.
@@ -34,7 +34,7 @@ router.post('/register', async (req, res) => {
   }
 });
 
-router.post('/login', async (req, res) => {
+router.post('/api/login', async (req, res) => {
   mongoose.connect(process.env.MONGO_URL);
   
   const { email, password } = req.body;
@@ -63,7 +63,7 @@ router.post('/login', async (req, res) => {
   }
 });
 
-router.get('/profile', (req, res) => {
+router.get('/api/profile', (req, res) => {
   mongoose.connect(process.env.MONGO_URL);
   
   // We need to get the token from the cookie.
@@ -84,7 +84,7 @@ router.get('/profile', (req, res) => {
   }
 });
 
-router.post('/logout', (req, res) => {
+router.post('/api/logout', (req, res) => {
   // res.clearCookie('token');
   res.cookie('token', '').json(true);
 });

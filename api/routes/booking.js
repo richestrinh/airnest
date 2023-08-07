@@ -21,7 +21,7 @@ function getUserDataFromReq(req) {
 }
 
 // Endpoint for saving a booking into the database.
-router.post('/bookings', async (req, res) => {
+router.post('/api/bookings', async (req, res) => {
   mongoose.connect(process.env.MONGO_URL);
   
   const userData = await getUserDataFromReq(req);
@@ -40,7 +40,7 @@ router.post('/bookings', async (req, res) => {
 });
 
 // Endpoint used for displaying all bookings.
-router.get('/bookings', async (req, res) => {
+router.get('/api/bookings', async (req, res) => {
   mongoose.connect(process.env.MONGO_URL);
   
   const userData = await getUserDataFromReq(req);

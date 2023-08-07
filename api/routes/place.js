@@ -46,7 +46,7 @@ async function uploadToAWS(path, originalFilename, mimeType) {
 
 // Endpoint for uploading an image by a link. 
 // TODO: Make sure the link is valid.
-router.post('/upload-by-link', async (req, res) => {  
+router.post('/api/upload-by-link', async (req, res) => {  
   const { link } = req.body;
   const newName = 'photo' + Date.now() + '.jpg';
   await imageDownloader.image({
@@ -61,7 +61,7 @@ router.post('/upload-by-link', async (req, res) => {
 // Endpoint for uploading an image from a device.
 // Uses Multer middleware.
 const photosMiddleware = multer({ dest: '/tmp' });
-router.post('/upload', photosMiddleware.array('photos', 100), async (req, res) => {
+router.post('/api/upload', photosMiddleware.array('photos', 100), async (req, res) => {
   // Keep track of the number of files uploaded.
   const uploadedFiles = [];
 
@@ -77,7 +77,7 @@ router.post('/upload', photosMiddleware.array('photos', 100), async (req, res) =
 });
 
 // Endpoint for creating a new place.
-router.post('/places', (req, res) => {
+router.post('/api/places', (req, res) => {
   mongoose.connect(process.env.MONGO_URL);
   
   const { token } = req.cookies;
@@ -104,7 +104,7 @@ router.post('/places', (req, res) => {
 });
 
 // Endpoint for getting all places owned by the user.
-router.get('/user-places', (req, res) => {
+router.get('/api/user-places', (req, res) => {
   mongoose.connect(process.env.MONGO_URL);
   
   const { token } = req.cookies;
@@ -119,7 +119,7 @@ router.get('/user-places', (req, res) => {
 
 // Endpoint for getting a place by id.
 // Used to set owner ObjectID in MongoDB.
-router.get('/places/:id', async (req, res) => { 
+router.get('/api/places/:id', async (req, res) => { 
   mongoose.connect(process.env.MONGO_URL);
   
   const { id } = req.params;
@@ -127,7 +127,7 @@ router.get('/places/:id', async (req, res) => {
 });
 
 // Endpoint for updating a place.
-router.put('/places/', async (req, res) => {
+router.put('/api/places/', async (req, res) => {
   mongoose.connect(process.env.MONGO_URL);
   
   const { token } = req.cookies;
@@ -156,7 +156,7 @@ router.put('/places/', async (req, res) => {
 });
 
 // Endpoint for getting all places for displaying on main page.
-router.get('/places', async (req, res) => {
+router.get('/api/places', async (req, res) => {
   mongoose.connect(process.env.MONGO_URL);
   
   res.json(await Place.find());
