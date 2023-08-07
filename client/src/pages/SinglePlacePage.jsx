@@ -1,9 +1,9 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import AddressLink from "../AddressLink";
-import BookingWidget from "../BookingWidget";
-import PlaceGallery from "../PlaceGallery";
+import AddressLink from "../components/AddressLink";
+import BookingWidget from "../components/BookingWidget";
+import PlaceGallery from "../components/PlaceGallery";
 
 export default function SinglePlacePage() {
   const { id } = useParams();

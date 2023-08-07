@@ -2,7 +2,7 @@ import axios from "axios";
 import { useState } from "react";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
-import Image from "../Image";
+import Image from "../components/Image";
 
 export default function IndexPage() {
   const [places, setPlaces] = useState([]);
