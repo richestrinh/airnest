@@ -2,6 +2,7 @@
 
 const express = require('express');
 const Booking = require('../models/Booking.js');
+const mongoose = require('mongoose');
 
 const jwt = require('jsonwebtoken');
 const jwtSecret = "asdasdbfyhcmiqwuhe";
@@ -21,6 +22,8 @@ function getUserDataFromReq(req) {
 
 // Endpoint for saving a booking into the database.
 router.post('/bookings', async (req, res) => {
+  mongoose.connect(process.env.MONGO_URL);
+  
   const userData = await getUserDataFromReq(req);
   const {
     place, checkIn, checkOut, numOfGuests, name, mobile, price,
@@ -38,6 +41,8 @@ router.post('/bookings', async (req, res) => {
 
 // Endpoint used for displaying all bookings.
 router.get('/bookings', async (req, res) => {
+  mongoose.connect(process.env.MONGO_URL);
+  
   const userData = await getUserDataFromReq(req);
   res.json( await Booking.find({ user: userData.id }).populate('place'));
 });

@@ -31,9 +31,8 @@ app.use(placeRoute);
 // Handling of user's bookings.
 app.use(bookingRoute);
 
-mongoose.connect(process.env.MONGO_URL);
-
 app.get('/test', (req, res) => {
+  mongoose.connect(process.env.MONGO_URL);
   res.json('test ok');
 });
 

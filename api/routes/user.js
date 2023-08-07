@@ -2,6 +2,7 @@
 
 const express = require('express');
 const User = require('../models/User.js');
+const mongoose = require('mongoose');
 
 const bcrypt = require('bcryptjs');
 // Generate salt.
@@ -13,6 +14,8 @@ const jwtSecret = "asdasdbfyhcmiqwuhe";
 const router = express.Router();
 
 router.post('/register', async (req, res) => {
+  mongoose.connect(process.env.MONGO_URL);
+
   // Grab all information from the request body.
   const { name, email, password } = req.body;
 
@@ -32,6 +35,8 @@ router.post('/register', async (req, res) => {
 });
 
 router.post('/login', async (req, res) => {
+  mongoose.connect(process.env.MONGO_URL);
+  
   const { email, password } = req.body;
   // Find user by email.
   const userDoc = await User.findOne({ email: email });
@@ -59,6 +64,8 @@ router.post('/login', async (req, res) => {
 });
 
 router.get('/profile', (req, res) => {
+  mongoose.connect(process.env.MONGO_URL);
+  
   // We need to get the token from the cookie.
   const { token } = req.cookies;
 
