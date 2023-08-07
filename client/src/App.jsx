@@ -13,7 +13,7 @@ import SinglePlacePage from './pages/SinglePlacePage';
 import BookingsPage from './BookingsPage';
 import SingleBookingPage from './SingleBookingPage';
 
-axios.defaults.baseURL = 'http://localhost:4000/';
+axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL;
 // Setting withCredentials to true will have Axios include cookies in the request it sends.
 axios.defaults.withCredentials = true;
 
