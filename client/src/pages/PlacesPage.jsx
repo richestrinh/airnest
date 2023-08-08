@@ -6,7 +6,7 @@ import AccountNav from "../components/AccountNav";
 import PlaceImg from "../components/PlaceImg";
 export default function PlacesPage() {
 const [places, setPlaces] = useState([]);
-const [isMobile, setIsMobile] = useState(false);
+const [isMobile, setIsMobile] = useState(window.innerWidth <= 1200);
   // After rendering, get places from the database.
   useEffect(() => {
     axios.get('/user-places').then(({ data }) => {
@@ -51,7 +51,7 @@ const [isMobile, setIsMobile] = useState(false);
             // For each place.
           <div key={place._id}>
           <Link to={'/account/places/'+place._id} className="flex cursor-pointer gap-4 bg-gray-100 p-4 rounded-2xl mb-4 shadow-md">
-            <div className="flex w-32 h-32 bg-gray-300 grow shrink-0">            
+            <div className="flex w-32 h-32 bg-gray-300 shrink-0">            
               <PlaceImg place={place} /> 
             </div>
             <div className="grow-0 shrink">
