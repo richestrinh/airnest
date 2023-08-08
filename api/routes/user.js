@@ -59,7 +59,7 @@ router.post('/api/login', async (req, res) => {
     }
   }
   else {
-    res.json('not found');
+    res.json('no_user');
   }
 });
 

@@ -15,14 +15,15 @@ export default function LoginPage() {
     try {
       // Send request to API. Defaults to localhost:4000 in App.jsx.
       const response = await axios.post('/login', { email, password });
-      // const {data} = await axios.post('/login', { email, password });
-      
-      alert('Login successful');
+      if(response.data != 'no_user') {
+        alert('Login successful!');
+        setUser(response.data);
+        setRedirect(true);
+      }
+      else {
+        alert('Login not found! Try again or register now.')
+      }      
 
-      setUser(response.data);
-      // setUser(data);
-
-      setRedirect(true);
     } catch (e) {
       alert('Login failed');
     }
