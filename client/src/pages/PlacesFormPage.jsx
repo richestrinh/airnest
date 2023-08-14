@@ -18,6 +18,7 @@ export default function PlacesFormPage() {
   const [maxGuests, setMaxGuests] = useState(1);
   const [price, setPrice] = useState(100);
   const [redirect, setRedirect] = useState(false);
+  const [deletePopup, setDeletePopup] = useState(false);
 
   const { id } = useParams();
   useEffect(() => {
@@ -69,7 +70,7 @@ export default function PlacesFormPage() {
     if (id) {
       await axios.put('/places', {
         id, ...placeData
-      });      
+      });
       setRedirect(true);
     } else {
       // If no id, add a new place.
@@ -79,6 +80,20 @@ export default function PlacesFormPage() {
     // TODO: setRedirect here instead.
   }
 
+  async function deletePlace() {
+    console.log(id)
+    if (id) {
+      const response = await axios.delete('/places/'+id);
+      if (response.data == 'success') {
+        res.json('Place deleted!');
+      }
+      else {
+        res.json('Failed to delete!');
+      }
+      setRedirect(true);
+    }
+  }
+
   if (redirect) {
     return <Navigate to="/account/places" />;
   }
@@ -86,6 +101,37 @@ export default function PlacesFormPage() {
   return (
     <div>
       <AccountNav />
+      <button className="primary" onClick={() => setDeletePopup(true)}>Delete Place</button>
+
+      {deletePopup && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 border">
+          <div className="bg-white rounded-lg shadow-lg w-full md:w-9/12 lg:w-5/12">
+            <div className="flex p-2">
+              <button onClick={() => setDeletePopup(false)} className="bg-transparent text-black p-1 rounded-3xl hover:bg-gray-300">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="mb-6 px-6">
+              <div className="flex justify-between mt-2">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                </svg>
+                <h3 className="text-xl lg:text-2xl font-bold mb-6 lg:mb-8">Are you sure you want to delete this place?</h3>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                </svg>
+              </div>
+              <div className="flex gap-6">
+                <button className="primary hover:bg-darkPrimary" onClick={deletePlace}>Yes</button>
+                <button className="primary hover:bg-darkPrimary" onClick={() => setDeletePopup(false)}>No</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <form onSubmit={savePlace}>
         {preInput('Title', 'title for your place.')}
         <input type="text"

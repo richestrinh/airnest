@@ -161,4 +161,27 @@ router.get('/api/places', async (req, res) => {
   
   res.json(await Place.find());
 });
+
+router.delete('/api/places/:id', async (req, res) => {
+  mongoose.connect(process.env.MONGO_URL);
+  
+  const { token } = req.cookies;
+  const { id } = req.params;
+  jwt.verify(token, jwtSecret, {}, async (err, userData) => {
+    if (err) {
+      return res.status(401).json({ error: "Unauthorized action"})
+    }
+
+    const placeDoc = await Place.findById(id);
+    // Check if the user owns the place. (check if id's match)
+    if (userData.id === placeDoc.owner.toString()) {
+      await Place.findByIdAndDelete(id)
+      return res.json('success');
+    }
+    else {
+      return res.json('failed');
+    }
+  });
+});
+
 module.exports = router;
