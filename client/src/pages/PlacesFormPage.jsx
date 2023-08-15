@@ -19,6 +19,7 @@ export default function PlacesFormPage() {
   const [price, setPrice] = useState(100);
   const [redirect, setRedirect] = useState(false);
   const [deletePopup, setDeletePopup] = useState(false);
+  const [openPopup, setOpenPopup] = useState(false);
 
   const { id } = useParams();
   useEffect(() => {
@@ -39,6 +40,16 @@ export default function PlacesFormPage() {
       setPrice(data.price);
     });
   }, [id]);
+
+  useEffect(() => {
+    if (openPopup) {
+      const timeout = setTimeout(() => {
+        setOpenPopup(false)
+      }, 3000);
+
+      return () => clearTimeout(timeout);
+    }
+  }, [openPopup]);
 
   function inputHeader(text) {
     return (
@@ -66,24 +77,29 @@ export default function PlacesFormPage() {
       description, perks, extraInfo,
       checkIn, checkOut, maxGuests, price
     };
-    // Edit an existing place in the database.
-    if (id) {
-      await axios.put('/places', {
-        id, ...placeData
-      });
-      setRedirect(true);
-    } else {
-      // If no id, add a new place.
-      await axios.post('/places', placeData);
-      setRedirect(true);
+    if (addedPhotos.length > 3) {
+      // Edit an existing place in the database.
+      if (id) {
+        await axios.put('/places', {
+          id, ...placeData
+        });
+        setRedirect(true);
+      } else {
+        // If no id, add a new place.
+        await axios.post('/places', placeData);
+        setRedirect(true);
+      }
+      // TODO: setRedirect here instead.
     }
-    // TODO: setRedirect here instead.
+    else {
+      setOpenPopup(true)
+    }
   }
 
   async function deletePlace() {
     console.log(id)
     if (id) {
-      const response = await axios.delete('/places/'+id);
+      const response = await axios.delete('/places/' + id);
       if (response.data == 'success') {
         res.json('Place deleted!');
       }
@@ -195,6 +211,18 @@ export default function PlacesFormPage() {
           </div>
         </div>
         <button className="primary my-4">Save</button>
+        {openPopup && (
+          <div className="fixed top-4 right-4 flex items-center justify-center">
+            <div className={`flex bg-white rounded-lg shadow-lg w-full p-6 border gap-3 animate-dropIn`}>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+              </svg>
+              <div>
+                Please upload at least 3 photos!
+              </div>
+            </div>
+          </div>
+        )}
       </form>
     </div>
   );
