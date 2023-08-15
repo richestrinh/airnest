@@ -77,7 +77,7 @@ export default function PlacesFormPage() {
       description, perks, extraInfo,
       checkIn, checkOut, maxGuests, price
     };
-    if (addedPhotos.length > 3) {
+    if (addedPhotos.length >= 3) {
       // Edit an existing place in the database.
       if (id) {
         await axios.put('/places', {
