@@ -71,7 +71,7 @@ export default function SinglePlacePage() {
 
             {openPopup && (
               <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                <div className="bg-white rounded-lg shadow-lg w-full md:w-9/12 lg:w-5/12 border border-yellow-500">
+                <div className="bg-white rounded-lg shadow-lg w-full md:w-9/12 lg:w-5/12 animate-dropIn">
                   <div className="flex p-4">
                     <button onClick={() => setOpenPopup(false)} className="bg-transparent text-black p-1 rounded-3xl hover:bg-gray-300">
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
