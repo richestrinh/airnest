@@ -41,7 +41,7 @@ async function uploadToAWS(path, originalFilename, mimeType) {
     ACL: 'public-read',
   }));
 
-  return `http://${bucket}.s3.amazonaws.com/${newFilename}`;
+  return `https://${bucket}.s3.amazonaws.com/${newFilename}`;
 }
 
 // Endpoint for uploading an image by a link. 
