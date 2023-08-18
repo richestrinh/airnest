@@ -1,6 +1,6 @@
 export default function Image({ src,...rest }) {
   // Check if path is a full link. 
-  src = src && src.includes('https://') 
+  src = src && src.includes('http://') 
   ? src : 'http://localhost:4000/uploads/'+src;
 
   return (
