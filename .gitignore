@@ -6,3 +6,4 @@ client/node_modules
 .history
 client/package-lock.json
 api/package.json
+tests/node_modules
