@@ -3,3 +3,6 @@ api/node_modules
 api/uploads
 client/.env
 client/node_modules
+.history
+client/package-lock.json
+api/package.json
