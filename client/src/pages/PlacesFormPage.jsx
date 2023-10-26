@@ -151,12 +151,14 @@ export default function PlacesFormPage() {
       <form onSubmit={savePlace}>
         {preInput('Title', 'title for your place.')}
         <input type="text"
+          id='title'
           value={title}
           onChange={ev => setTitle(ev.target.value)}
           placeholder="title, for example: My lovely apt" />
 
         {preInput('Address', 'address for your place.')}
         <input type="text"
+          id='address'
           value={address}
           onChange={ev => setAddress(ev.target.value)}
           placeholder="address" />
@@ -166,7 +168,7 @@ export default function PlacesFormPage() {
 
 
         {preInput('Description', 'description for your place.')}
-        <textarea value={description} onChange={ev => setDescription(ev.target.value)} />
+        <textarea id='description' value={description} onChange={ev => setDescription(ev.target.value)} />
 
         {preInput('Perks', 'Select all the perks for your place.')}
         <div className="grid mt-2 gap-2 grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
@@ -175,6 +177,7 @@ export default function PlacesFormPage() {
 
         {preInput('Extra Info', 'house rules, etc')}
         <textarea
+          id='extra-info'
           value={extraInfo}
           onChange={ev => setExtraInfo(ev.target.value)} />
 
@@ -183,6 +186,7 @@ export default function PlacesFormPage() {
           <div>
             <h3 className="mt-2 -mb-1">Check in time</h3>
             <input type="text"
+              id='check-in'
               value={checkIn}
               onChange={ev => setCheckIn(ev.target.value)}
               placeholder="14:00" />
@@ -191,6 +195,7 @@ export default function PlacesFormPage() {
           <div>
             <h3 className="mt-2 -mb-1">Check out time</h3>
             <input type="text"
+              id='check-out'
               value={checkOut}
               onChange={ev => setCheckOut(ev.target.value)}
               placeholder="11:00" />
@@ -199,6 +204,7 @@ export default function PlacesFormPage() {
           <div>
             <h3 className="mt-2 -mb-1">Max number of guests</h3>
             <input type="number"
+              id='guests'
               value={maxGuests}
               onChange={ev => setMaxGuests(ev.target.value)} />
           </div>
@@ -206,11 +212,12 @@ export default function PlacesFormPage() {
           <div>
             <h3 className="mt-2 -mb-1">Price per night</h3>
             <input type="number"
+              id='price'
               value={price}
               onChange={ev => setPrice(ev.target.value)} />
           </div>
         </div>
-        <button className="primary my-4">Save</button>
+        <button id='save' className="primary my-4">Save</button>
         {openPopup && (
           <div className="fixed top-4 right-4 flex items-center justify-center">
             <div className={`flex bg-white rounded-lg shadow-lg w-full p-6 border gap-3 animate-dropIn`}>

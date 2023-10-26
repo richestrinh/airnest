@@ -4,11 +4,19 @@ import Image from "./Image";
 
 export default function PhotosUploader({ addedPhotos, onChange }) {
   const [photoLink, setPhotoLink] = useState('');
-  // TODO: Handle invalid link error.
+  // Function to validate URLs
+  function validateURL(url) {
+    const pattern = /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/i;
+    return pattern.test(url);
+  }
   async function addPhotoByLink(ev) {
     try {
       // Prevent reloading of form after clicking button that calls this function.
       ev.preventDefault();
+      const isValidURL = validateURL(photoLink);
+      if (!isValidURL) {
+        throw new Error('ERR_INVALID_URL');
+      }
       // We need endpoint that will take the link and upload it to the server(uploads folder).
       // Send 'photoLink' as 'link' to the endpoint.
       const { data: filename } = await axios.post('/upload-by-link', { link: photoLink });
@@ -55,10 +63,11 @@ export default function PhotosUploader({ addedPhotos, onChange }) {
       {/* Add by Link */}
       <div className="flex gap-2">
         <input type="text"
+          id='photo'
           value={photoLink}
           onChange={ev => setPhotoLink(ev.target.value)}
           placeholder="Add photo using a link (.jpg format)" />
-        <button onClick={addPhotoByLink} className="bg-gray-200 px-4 rounded-2xl">Add&nbsp;photo</button>
+        <button id='add-photo' onClick={addPhotoByLink} className="bg-gray-200 px-4 rounded-2xl">Add&nbsp;photo</button>
       </div>
 
       {/* Upload Button and Album of added Photos*/}
